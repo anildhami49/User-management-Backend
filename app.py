@@ -233,5 +233,15 @@ def save_profile(current_user):
 def health_check():
     return jsonify({'status': 'healthy', 'message': 'Backend is running!'}), 200
 
+# Root route for Azure health check
+@app.route('/', methods=['GET'])
+def root():
+    return jsonify({
+        'status': 'online',
+        'message': 'User Management Backend API',
+        'version': '1.0.0',
+        'endpoints': ['/api/signup', '/api/login', '/api/profile', '/api/health']
+    }), 200
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

@@ -23,7 +23,7 @@ CORS(app, resources={
         "origins": [
             "http://localhost:3000",
             "http://127.0.0.1:3000",
-            "https://usermanagementservices-frontend-atbzdze6fubebyb4.centralindia-01.azurewebsites.net"
+            "https://usermanagementservices-frontend-atbzdze6fubebyb4.canadacentral-01.azurewebsites.net"
         ],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"],

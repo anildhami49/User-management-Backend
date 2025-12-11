@@ -1,3 +1,3 @@
 #!/bin/bash
 # Azure App Service startup command for Python Flask
-python -m gunicorn --bind=0.0.0.0:8000 --workers=4 --timeout=600 --access-logfile '-' --error-logfile '-' app:app
+gunicorn --bind=0.0.0.0:$PORT --workers=1 --threads=4 --timeout=0 --access-logfile=- --error-logfile=- app:app

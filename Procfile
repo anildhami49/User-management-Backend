@@ -1,2 +1,1 @@
-# Flask Backend on Azure
-web: python -m gunicorn app:app --bind=0.0.0.0:$PORT --workers=4 --timeout=600
+web: gunicorn --bind=0.0.0.0:$PORT --workers=1 --threads=4 --timeout=0 app:app

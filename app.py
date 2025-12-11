@@ -242,6 +242,9 @@ def root():
     }), 200
 
 if __name__ == '__main__':
-    # Get port from environment variable for Azure
-    port = int(os.environ.get('PORT', 8000))
+    # Azure sets PORT environment variable
+    port = int(os.getenv('PORT', 8000))
     app.run(host='0.0.0.0', port=port, debug=False)
+
+# For gunicorn - expose the app at module level
+application = app

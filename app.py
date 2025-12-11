@@ -16,7 +16,21 @@ load_dotenv()
 
 # App setup
 app = Flask(__name__)
-CORS(app)
+
+# CORS configuration - Allow frontend domains
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000",
+            "http://127.0.0.1:3000",
+            "https://usermanagementservices-frontend-atbzdze6fubebyb4.centralindia-01.azurewebsites.net"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
+
 logging.basicConfig(level=logging.DEBUG)
 
 # Config from env

@@ -253,7 +253,17 @@ def save_profile(current_user):
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    mongo_status = "connected" if db is not None else "disconnected"
+    # Test actual MongoDB connection
+    mongo_status = "disconnected"
+    if db is not None:
+        try:
+            # Ping the database to verify connection
+            client.admin.command('ping')
+            mongo_status = "connected"
+        except Exception as e:
+            logging.error(f"Health check - MongoDB ping failed: {e}")
+            mongo_status = "disconnected"
+    
     return jsonify({
         'status': 'healthy', 
         'message': 'Backend is running!',

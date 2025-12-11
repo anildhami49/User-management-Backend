@@ -33,24 +33,37 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Config from env
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'your-secret-key-change-this')
-MONGO_URI = os.getenv('MONGO_URI', 'mongodb://localhost:27017/')
-MONGO_DB_NAME = os.getenv('MONGO_DB_NAME', 'user_management_db')  # explicit DB name to use
+MONGO_URI = os.getenv('MONGO_URI')
+MONGO_DB_NAME = os.getenv('MONGO_DB_NAME', 'user_management_db')
 
-logging.debug("MONGO_URI (masked): %s", MONGO_URI.replace(os.getenv('MONGO_PASSWORD',''), '***') if os.getenv('MONGO_PASSWORD') else MONGO_URI)
+# Validate critical environment variables
+if not MONGO_URI:
+    logging.error("CRITICAL: MONGO_URI environment variable is not set!")
+    MONGO_URI = 'mongodb://localhost:27017/'  # Fallback for local testing
+
+logging.info("Starting application...")
+logging.info(f"Using database: {MONGO_DB_NAME}")
+logging.info(f"MONGO_URI is set: {bool(MONGO_URI)}")
 
 # MongoDB Connection
 try:
-    # Use TLS for Cosmos DB. Do NOT use tlsAllowInvalidCertificates in production.
-    client = MongoClient(MONGO_URI, tls=True)
+    # Use TLS for Cosmos DB
+    client = MongoClient(MONGO_URI, tls=True, serverSelectionTimeoutMS=5000)
+    # Test connection
+    client.server_info()
+    logging.info("✅ Successfully connected to MongoDB")
+    
     # Prefer explicit DB chosen via env to avoid writing to unexpected DB
     db = client[MONGO_DB_NAME]
     users_collection = db['users']
     profiles_collection = db['profiles']
-    # quick check
-    logging.debug("Connected to MongoDB. Using DB: %s", MONGO_DB_NAME)
+    logging.info(f"Using database: {MONGO_DB_NAME}")
 except Exception as e:
-    logging.exception("Error connecting to MongoDB: %s", e)
-    raise
+    logging.exception(f"❌ Error connecting to MongoDB: {e}")
+    # Don't crash - create dummy collections for startup
+    db = None
+    users_collection = None
+    profiles_collection = None
 
 # Token required decorator
 def token_required(f):
@@ -229,15 +242,23 @@ def save_profile(current_user):
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    return jsonify({'status': 'healthy', 'message': 'Backend is running!'}), 200
+    mongo_status = "connected" if db is not None else "disconnected"
+    return jsonify({
+        'status': 'healthy', 
+        'message': 'Backend is running!',
+        'mongodb': mongo_status,
+        'database': MONGO_DB_NAME
+    }), 200
 
 # Root route for Azure health check
 @app.route('/', methods=['GET'])
 def root():
+    mongo_status = "connected" if db is not None else "disconnected"
     return jsonify({
         'status': 'online',
         'message': 'User Management Backend API',
         'version': '1.0.0',
+        'mongodb': mongo_status,
         'endpoints': ['/api/signup', '/api/login', '/api/profile', '/api/health']
     }), 200
 

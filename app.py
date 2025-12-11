@@ -47,8 +47,16 @@ logging.info(f"MONGO_URI is set: {bool(MONGO_URI)}")
 
 # MongoDB Connection
 try:
-    # Use TLS for Cosmos DB
-    client = MongoClient(MONGO_URI, tls=True, serverSelectionTimeoutMS=5000)
+    # Use TLS for Cosmos DB - increase timeout to 30 seconds
+    logging.info(f"Attempting to connect to MongoDB...")
+    client = MongoClient(
+        MONGO_URI, 
+        tls=True, 
+        tlsAllowInvalidCertificates=False,
+        serverSelectionTimeoutMS=30000,
+        connectTimeoutMS=30000,
+        socketTimeoutMS=30000
+    )
     # Test connection
     client.server_info()
     logging.info("✅ Successfully connected to MongoDB")
@@ -57,9 +65,12 @@ try:
     db = client[MONGO_DB_NAME]
     users_collection = db['users']
     profiles_collection = db['profiles']
-    logging.info(f"Using database: {MONGO_DB_NAME}")
+    logging.info(f"✅ Using database: {MONGO_DB_NAME}")
+    logging.info(f"✅ Collections initialized: users, profiles")
 except Exception as e:
-    logging.exception(f"❌ Error connecting to MongoDB: {e}")
+    logging.error(f"❌ Error connecting to MongoDB: {type(e).__name__}")
+    logging.error(f"❌ Error details: {str(e)}")
+    logging.exception("Full traceback:")
     # Don't crash - create dummy collections for startup
     db = None
     users_collection = None

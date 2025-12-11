@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_WEBAPP_NAME: student-application-backend
+  AZURE_WEBAPP_NAME: usermgmt-backend-new
   PYTHON_VERSION: '3.11'
 
 permissions:
@@ -45,4 +45,4 @@ jobs:
       - name: Deployment Summary
         run: |
           echo "✅ Backend deployment completed!"
-          echo "🌐 Backend URL: https://student-application-backend-axeuh0g7bmcuema2.centralindia-01.azurewebsites.net"
+          echo "🌐 Backend URL: https://usermgmt-backend-new-e8d9eveyg2c7d2fz.centralindia-01.azurewebsites.net"

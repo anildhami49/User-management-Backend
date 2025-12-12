@@ -22,7 +22,8 @@ CORS(app,
      origins=[
          "http://localhost:3000",
          "http://127.0.0.1:3000",
-         "https://usermanagementservices-frontend-atbzdze6fubebyb4.canadacentral-01.azurewebsites.net"
+         "https://usermanagementservices-frontend-atbzdze6fubebyb4.canadacentral-01.azurewebsites.net",
+         "https://usermgmt-frontend-container-d4hmg5g7cuabaeby.canadacentral-01.azurewebsites.net"
      ],
      methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
      allow_headers=["Content-Type", "Authorization"],
@@ -267,6 +268,7 @@ def health_check():
     return jsonify({
         'status': 'healthy', 
         'message': 'Backend is running!',
+        'version': '1.0.1',  # Test GitHub Actions automation
         'mongodb': mongo_status,
         'database': MONGO_DB_NAME
     }), 200
